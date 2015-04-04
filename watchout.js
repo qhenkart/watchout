@@ -20,8 +20,9 @@ var updateBestScore = function(){
 // initialize board
 var svg = d3.select("body").append("svg")
     .attr("width", gameOptions.width)
-    .attr("height", gameOptions.height)
-    .append("rect")
+    .attr("height", gameOptions.height);
+
+svg.append("rect")
     .attr("width", "100%")
     .attr("height", "100%")
     .attr("fill", "white");
@@ -61,24 +62,26 @@ Enemies.prototype.update = function(){
     .attr('cy', function(d){return d.y})
     .attr('r', function(d){return d.r}); //size
 }
+// ========================  DRAG and Player Instantiation ======================= */
+var drag = d3.behavior.drag()
+    .on("drag", dragmove);
+//define player
+var player = function(){
+  var p = {x: 225, y: 300 };
 
-
-var Player = function(name){
-  this.color = '#00f'
-  this.x = 350;
-  this.y = 225;
-  this.radius = 9;
-  this.angle = 0;
-  this.name = name
+  svg.append("circle")
+      .attr("transform", "translate(" + p.x + "," + p.y + ")")
+      .attr("r", "10")
+      .attr("class", "player")
+      .attr("fill", 'blue')
+      .style("cursor", "pointer")
+      .call(drag);
 }
-
-Player.prototype.createPlayer = function() {
-  d3.select('svg').append("circle")
-  .attr('class', 'player')
-  .attr("cx", this.x)
-  .attr("cy", this.y)
-  .attr("r", this.radius)
-  .attr('fill', this.color);
+//drag magic
+function dragmove(d) {
+  var x = d3.event.x; //catch event
+  var y = d3.event.y;
+  d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
 }
 
 // create the enemies's instance
@@ -87,16 +90,10 @@ var enemies = new Enemies();
 var enemyProperties = enemies.createProperties();
 // insert the enemies in the svg element
 enemies.createEnemies();
-// create the player instance
-var player = new Player("Elvio");
-// Draw the player in the svg element
-player.createPlayer();
 // update enemies's position
 enemies.update()
 // update enemies's position with an interval
-
 setInterval(function(){enemies.update()}, 7500);
-
-
+player()
 
 
