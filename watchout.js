@@ -45,6 +45,7 @@ Enemies.prototype.createEnemies = function(){
     .append("circle")
     .data(enemyProperties)
     .enter().append('circle')
+    .attr('class', 'enemy')
     .attr('cx', function(d){return d.x}) //positions
     .attr('cy', function(d){return d.y})
     .attr('r', function(d){return d.r}) //size
@@ -53,7 +54,7 @@ Enemies.prototype.createEnemies = function(){
 }
 Enemies.prototype.update = function(){
   enemyProperties = this.createProperties();
-  d3.selectAll('circle')
+  d3.selectAll('.enemy')
     .data(enemyProperties)
     .transition().duration(6500)
     .attr('cx', function(d){return d.x}) //positions
@@ -66,29 +67,30 @@ var Player = function(name){
   this.color = '#00f'
   this.x = 350;
   this.y = 225;
-  this.radius = 15;
+  this.radius = 9;
   this.angle = 0;
   this.name = name
 }
 
 Player.prototype.createPlayer = function() {
   d3.select('svg').append("circle")
+  .attr('class', 'player')
   .attr("cx", this.x)
   .attr("cy", this.y)
   .attr("r", this.radius)
   .attr('fill', this.color);
 }
 
-// create the player instance
-var player = new Player("Elvio");
-// Draw the player in the svg element
-player.createPlayer();
 // create the enemies's instance
 var enemies = new Enemies();
 // create the enemies's properties
 var enemyProperties = enemies.createProperties();
 // insert the enemies in the svg element
 enemies.createEnemies();
+// create the player instance
+var player = new Player("Elvio");
+// Draw the player in the svg element
+player.createPlayer();
 // update enemies's position
 enemies.update()
 // update enemies's position with an interval
