@@ -36,4 +36,23 @@ var circles = d3.select("svg").selectAll('circle')
     .attr('fill', 'red');
 
 
+var Player = function(name){
+  this.color = '#00f'
+  this.x = 350;
+  this.y = 225;
+  this.radius = 15;
+  this.angle = 0;
+  this.name = name
+}
+
+Player.prototype.createPlayer = function() {
+  d3.select('svg').append("circle")
+  .attr("cx", this.x)
+  .attr("cy", this.y)
+  .attr("r", this.radius)
+  .attr('fill', this.color);
+}
+var player = new Player("Elvio");
+player.createPlayer();
+
 
