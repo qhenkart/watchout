@@ -56,7 +56,10 @@ var updateEnemies = function(){
     .attr('r', function(d){return d.r}); //size
 }
 // ========================  DRAG and Player Instantiation ======================= */
-var drag = d3.behavior.drag()
+var drag = d3.behavior.drag() .origin(function() {
+            var t = d3.select(this);
+            return {x: playerLoc.x, y: playerLoc.y};
+        })
     .on("drag", dragmove);
 //define player
 var player = function(){
@@ -65,11 +68,9 @@ var player = function(){
   svg.append("image")
       .attr('xlink:href', "images/spaceship.png")
       .attr("transform", "translate(" + playerLoc.x + "," + playerLoc.y + ")")
-      // .attr("r", "10")
       .attr("class", "player")
       .attr("width", 50)
       .attr("height", 50)
-      // .attr("fill", 'blue')
       .style("cursor", "pointer")
       .call(drag);
 }
@@ -79,14 +80,15 @@ function dragmove(d) {
   var y = d3.event.y;
   playerLoc.x = x;
   playerLoc.y = y;
-  moveRelative(d3.event.dx, d3.event.dy);
+  var angle = moveRelative(d3.event.dx, d3.event.dy);
   d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
 }
+//, rotate("+angle+")
 var moveRelative = function(dx,dy) {
   var transform;
   var x= playerLoc.x + dx;
   var y= playerLoc.y + dy;
-  var angle= 360 * (Math.atan2(dy,dx)/(Math.PI*2));
+  return 360 * (Math.atan2(dy,dx)/(Math.PI*2));
 }
 //collision detection
 var tweenFactory = function(){
