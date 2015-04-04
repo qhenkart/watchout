@@ -8,14 +8,10 @@ var gameOptions = {
 
 var gameStats = {
   score: 0,
-  bestScore: 0
+  bestScore: 0,
+  collisions: 0
 }
 
-
-var updateBestScore = function(){
-  gameStats.bestScore = _.max(gameStats.bestScore, gameStats.score)
-  d3.select('#best-score').text(gameStats.bestScore.toString());
-}
 
 // initialize board
 var svg = d3.select("body").append("svg")
@@ -101,7 +97,14 @@ var tweenFactory = function(){
 
     var separation = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2))
     if (separation < radiusSum){
-      console.log("collided");
+      if(gameStats.score > gameStats.bestScore){
+        gameStats.bestScore = gameStats.score
+        d3.select(".high").selectAll("span")
+        .text(gameStats.bestScore);
+      }
+      gameStats.score = 0;
+      d3.select(".collisions").selectAll("span")
+      .text(gameStats.collisions++);
     }
   }
 }
@@ -121,6 +124,11 @@ updateEnemies();
 setInterval(function(){
   updateEnemies();
 }, 3500);
+setInterval(function(){
+  gameStats.score++;
+  d3.select(".current").selectAll("span")
+  .text(gameStats.score)
+}, 100)
 player()
 
 
