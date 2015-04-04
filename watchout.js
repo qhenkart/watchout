@@ -43,7 +43,7 @@ Enemies.prototype.createProperties = function(){
 Enemies.prototype.createEnemies = function(){
   d3.select("svg").selectAll('circle')
     .append("circle")
-    .data(context)
+    .data(enemyProperties)
     .enter().append('circle')
     .attr('cx', function(d){return d.x}) //positions
     .attr('cy', function(d){return d.y})
@@ -52,12 +52,13 @@ Enemies.prototype.createEnemies = function(){
 
 }
 Enemies.prototype.update = function(){
-  context = this.createProperties();
+  enemyProperties = this.createProperties();
   d3.selectAll('circle')
-    .data(context)
-    .attr('cx', function(d){return d.x}).transition().duration(6500) //positions
-    .attr('cy', function(d){return d.y}).transition().duration(6500)
-    .attr('r', function(d){return d.r}).transition().duration(6500); //size
+    .data(enemyProperties)
+    .transition().duration(6500)
+    .attr('cx', function(d){return d.x}) //positions
+    .attr('cy', function(d){return d.y})
+    .attr('r', function(d){return d.r}); //size
 }
 
 
@@ -77,26 +78,23 @@ Player.prototype.createPlayer = function() {
   .attr("r", this.radius)
   .attr('fill', this.color);
 }
+
+// create the player instance
 var player = new Player("Elvio");
+// Draw the player in the svg element
 player.createPlayer();
+// create the enemies's instance
 var enemies = new Enemies();
-var context = enemies.createProperties();
+// create the enemies's properties
+var enemyProperties = enemies.createProperties();
+// insert the enemies in the svg element
 enemies.createEnemies();
+// update enemies's position
 enemies.update()
+// update enemies's position with an interval
+
 setInterval(function(){enemies.update()}, 7500);
 
 
 
 
-
-
-// .data(context, function(d){
-  //   debugger;
-  //   return d.r;
-  // }).transition().duration(1500)
-  //  .data(context, function(d){
-  //   return d.cx;
-  // }).transition().duration(1500)
-  //   .data(context, function(d){
-  //   return d.cy;
-  // }).transition().duration(1500);
