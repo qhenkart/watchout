@@ -20,19 +20,17 @@ var updateBestScore = function(){
 // initialize board
 var svg = d3.select("body").append("svg")
     .attr("width", gameOptions.width)
-    .attr("height", gameOptions.height);
+    .attr("height", gameOptions.height)
+    .style("background-image", "url('images/background.jpg')");
 
-svg.append("rect")
-    .attr("width", "100%")
-    .attr("height", "100%")
-    .attr("fill", "white");
+// svg.append("rect")
+//     .attr("width", "100%")
+//     .attr("height", "100%")
+//     .attr("fill", "white");
 
 //create enemies
-var Enemies = function(){
 
-}
-
-Enemies.prototype.createProperties = function(){
+var createEnemyProperties = function(){
   var enemyData = [];
   for (var i = 0; i < gameOptions.nEnemies; i++){
     enemyData.push({r: 10, x: Math.random() * gameOptions.width + 1, y: Math.random() * gameOptions.height + 1});
@@ -41,7 +39,7 @@ Enemies.prototype.createProperties = function(){
 }
 
 
-Enemies.prototype.createEnemies = function(){
+var createEnemies = function(){
   d3.select("svg").selectAll('circle')
     .append("circle")
     .data(enemyProperties)
@@ -51,13 +49,12 @@ Enemies.prototype.createEnemies = function(){
     .attr('cy', function(d){return d.y})
     .attr('r', function(d){return d.r}) //size
     .attr('fill', 'red');
-
 }
-Enemies.prototype.update = function(){
-  enemyProperties = this.createProperties();
+var updateEnemies = function(){
+  enemyProperties = createEnemyProperties();
   d3.selectAll('.enemy')
     .data(enemyProperties)
-    .transition().duration(6500)
+    .transition().duration(3300).tween('custom', tweenFactory)
     .attr('cx', function(d){return d.x}) //positions
     .attr('cy', function(d){return d.y})
     .attr('r', function(d){return d.r}); //size
@@ -67,13 +64,16 @@ var drag = d3.behavior.drag()
     .on("drag", dragmove);
 //define player
 var player = function(){
-  var p = {x: 225, y: 300 };
+  window.playerLoc = {x: 225, y: 300, angle: 0};
 
-  svg.append("circle")
-      .attr("transform", "translate(" + p.x + "," + p.y + ")")
-      .attr("r", "10")
+  svg.append("image")
+      .attr('xlink:href', "images/spaceship.png")
+      .attr("transform", "translate(" + playerLoc.x + "," + playerLoc.y + ")")
+      // .attr("r", "10")
       .attr("class", "player")
-      .attr("fill", 'blue')
+      .attr("width", 50)
+      .attr("height", 50)
+      // .attr("fill", 'blue')
       .style("cursor", "pointer")
       .call(drag);
 }
@@ -81,19 +81,46 @@ var player = function(){
 function dragmove(d) {
   var x = d3.event.x; //catch event
   var y = d3.event.y;
+  playerLoc.x = x;
+  playerLoc.y = y;
+  moveRelative(d3.event.dx, d3.event.dy);
   d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
 }
+var moveRelative = function(dx,dy) {
+  var transform;
+  var x= playerLoc.x + dx;
+  var y= playerLoc.y + dy;
+  var angle= 360 * (Math.atan2(dy,dx)/(Math.PI*2));
+}
+//collision detection
+var tweenFactory = function(){
+  return function(d){
+    var radiusSum = 10+10;
+    var xDiff = this.cx.animVal.value - playerLoc.x;
+    var yDiff = this.cy.animVal.value - playerLoc.y;
+
+    var separation = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2))
+    if (separation < radiusSum){
+      console.log("collided");
+    }
+  }
+}
+
+
+
 
 // create the enemies's instance
-var enemies = new Enemies();
+
 // create the enemies's properties
-var enemyProperties = enemies.createProperties();
+var enemyProperties = createEnemyProperties();
 // insert the enemies in the svg element
-enemies.createEnemies();
+createEnemies();
 // update enemies's position
-enemies.update()
+updateEnemies();
 // update enemies's position with an interval
-setInterval(function(){enemies.update()}, 7500);
+setInterval(function(){
+  updateEnemies();
+}, 3500);
 player()
 
 
